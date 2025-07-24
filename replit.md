@@ -25,11 +25,12 @@ Preferred communication style: Simple, everyday language.
 - **Middleware**: Custom logging and error handling middleware
 
 ### Data Storage Solutions
+- **Database**: PostgreSQL with persistent storage
 - **ORM**: Drizzle ORM for type-safe database operations
-- **Database**: PostgreSQL (configured via Drizzle config)
 - **Database Provider**: Neon Database (@neondatabase/serverless)
 - **Schema**: Shared TypeScript schema definitions with Zod validation
-- **Development Storage**: In-memory storage implementation for development/testing
+- **Migration**: Database schema pushed using `npm run db:push`
+- **Seeding**: Initial data populated with Ghanaian characters and default user
 
 ## Key Components
 
@@ -98,8 +99,9 @@ The application uses a comprehensive schema with the following main entities:
 ### Development Environment
 - **Dev Server**: Vite development server with HMR
 - **API Server**: Express server with TypeScript execution via TSX
-- **Database**: Neon PostgreSQL with connection pooling
-- **Environment Variables**: DATABASE_URL and OPENAI_API_KEY required
+- **Database**: PostgreSQL with persistent storage and connection pooling
+- **Environment Variables**: DATABASE_URL, OPENAI_API_KEY, and PostgreSQL credentials configured
+- **Database Management**: Drizzle migrations and seeding scripts available
 
 ### Production Build
 - **Frontend**: Vite builds optimized static assets to `dist/public`
