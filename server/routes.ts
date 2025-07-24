@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { setupAuth, isAuthenticated } from "./replitAuth";
 import { generateCharacterResponse, generatePersuasionScenario } from "./services/openai";
 import { translateText, detectLanguage } from "./services/translate";
 import { 
@@ -10,6 +11,20 @@ import {
 } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Auth middleware
+  await setupAuth(app);
+
+  // Auth routes
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
   
   // Get all available characters
   app.get("/api/characters", async (req, res) => {
@@ -37,8 +52,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create a new conversation
-  app.post("/api/conversations", async (req, res) => {
+  // Create a new conversation (protected)
+  app.post("/api/conversations", isAuthenticated, async (req: any, res) => {
     try {
       const validatedData = insertConversationSchema.parse(req.body);
       
@@ -58,6 +73,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const conversation = await storage.createConversation({
         ...validatedData,
+        userId: req.user.claims.sub, // Use authenticated user ID
         scenario: scenarioData.scenario,
         topic: scenarioData.topic,
         aiStance: scenarioData.aiStance

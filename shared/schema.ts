@@ -1,17 +1,33 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Session storage table for authentication
+export const sessions = pgTable(
+  "sessions",
+  {
+    sid: varchar("sid").primaryKey(),
+    sess: jsonb("sess").notNull(),
+    expire: timestamp("expire").notNull(),
+  },
+  (table) => [index("IDX_session_expire").on(table.expire)],
+);
+
+// User storage table with Replit Auth support
 export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
+  id: varchar("id").primaryKey().notNull(), // Changed to varchar for Replit Auth
+  email: varchar("email").unique(),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
+  profileImageUrl: varchar("profile_image_url"),
+  username: text("username").unique(), // Optional username
   streak: integer("streak").default(0),
   hearts: integer("hearts").default(5),
   totalXp: integer("total_xp").default(0),
   level: integer("level").default(1),
   avatar: text("avatar"),
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const characters = pgTable("characters", {
@@ -31,7 +47,7 @@ export const characters = pgTable("characters", {
 
 export const conversations = pgTable("conversations", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
   characterId: integer("character_id").references(() => characters.id).notNull(),
   title: text("title").notNull(),
   scenario: text("scenario").notNull(),
@@ -65,7 +81,7 @@ export const messages = pgTable("messages", {
 
 export const achievements = pgTable("achievements", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
   type: text("type").notNull(), // 'conversation_starter', 'cultural_expert', etc.
   title: text("title").notNull(),
   description: text("description").notNull(),
@@ -101,6 +117,9 @@ export const insertAchievementSchema = createInsertSchema(achievements).omit({
   id: true,
   unlockedAt: true,
 });
+
+// Authentication types for Replit Auth
+export type UpsertUser = typeof users.$inferInsert;
 
 // Types
 export type User = typeof users.$inferSelect;

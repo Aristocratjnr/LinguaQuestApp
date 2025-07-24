@@ -2,11 +2,15 @@
 
 ## Overview
 
-This is a persuasive dialogue game where players interact with AI characters speaking Ghanaian languages (Twi, Ga, Ewe). Players must translate and craft persuasive arguments to convince AI characters to change their opinions, with scoring based on translation accuracy, persuasive strength, and cultural appropriateness. The game features a Duolingo-style UI with real-time translation and interactive AI behavior testing.
+**LinguaQuest** is a persuasive dialogue game where players interact with AI characters speaking Ghanaian languages (Twi, Ga, Ewe). Players must translate and craft persuasive arguments to convince AI characters to change their opinions, with scoring based on translation accuracy, persuasive strength, and cultural appropriateness. The game now features Replit authentication, Material Icons, and a glassy lemon-themed interface with interactive AI behavior testing.
 
 ## User Preferences
 
-Preferred communication style: Simple, everyday language.
+- **Communication Style**: Simple, everyday language
+- **Brand Name**: LinguaQuest (updated from PersuadeGH)
+- **Design Theme**: Glassy lemon cards with Material Icons instead of Lucide icons
+- **Authentication**: Replit Auth integration with session management
+- **UI Style**: Glass morphism design with lemon color scheme
 
 ## System Architecture
 
@@ -29,14 +33,15 @@ Preferred communication style: Simple, everyday language.
 - **ORM**: Drizzle ORM for type-safe database operations
 - **Database Provider**: Neon Database (@neondatabase/serverless)
 - **Schema**: Shared TypeScript schema definitions with Zod validation
-- **Migration**: Database schema pushed using `npm run db:push`
-- **Seeding**: Initial data populated with Ghanaian characters and default user
+- **Migration**: Manual SQL migrations for authentication tables
+- **Authentication Storage**: Sessions table for Replit Auth with user profiles
 
 ## Key Components
 
 ### Database Schema
 The application uses a comprehensive schema with the following main entities:
-- **Users**: User profiles with XP, levels, streaks, and hearts (gamification)
+- **Users**: Replit Auth user profiles with email, firstName, lastName, profileImageUrl, plus gamification (XP, levels, streaks, hearts)
+- **Sessions**: Replit Auth session storage with expiration tracking
 - **Characters**: AI debate opponents with personality, language, cultural context, persuasion resistance, and current stance
 - **Conversations**: Persuasion game sessions with topics, AI stances, and persuasion scoring
 - **Messages**: Individual persuasive exchanges with tone, translation accuracy, persuasive strength, and cultural appropriateness scores
@@ -62,13 +67,14 @@ The application uses a comprehensive schema with the following main entities:
 
 ## Game Flow
 
-1. **User Authentication**: Currently uses mock user data (ready for auth implementation)
-2. **Character Selection**: Users browse available Ghanaian AI characters and select debate opponents
-3. **Scenario Generation**: System generates controversial topics and AI stances for persuasion challenges
-4. **Persuasion Rounds**: Players craft arguments in Ghanaian languages with tone selection
-5. **AI Evaluation**: Multi-dimensional scoring of translation accuracy, persuasive strength, and cultural appropriateness
-6. **Progress Tracking**: Persuasion score changes, XP calculation, achievement unlocking, and progress persistence
-7. **Gamification**: Streak tracking, heart system, and level progression based on persuasive success
+1. **User Authentication**: Replit Auth with OpenID Connect for secure login/logout
+2. **Landing Page**: Beautiful glass-design welcome page for unauthenticated users
+3. **Character Selection**: Authenticated users browse available Ghanaian AI characters and select debate opponents
+4. **Scenario Generation**: System generates controversial topics and AI stances for persuasion challenges
+5. **Persuasion Rounds**: Players craft arguments in Ghanaian languages with tone selection
+6. **AI Evaluation**: Multi-dimensional scoring of translation accuracy, persuasive strength, and cultural appropriateness
+7. **Progress Tracking**: Persuasion score changes, XP calculation, achievement unlocking, and progress persistence
+8. **Gamification**: Streak tracking, heart system, and level progression based on persuasive success
 
 ## External Dependencies
 
@@ -78,16 +84,19 @@ The application uses a comprehensive schema with the following main entities:
 - Vite for development and build tooling
 
 ### UI and Styling
-- Tailwind CSS for utility-first styling
+- Tailwind CSS for utility-first styling with custom lemon-themed glass morphism classes
 - Radix UI for accessible component primitives
-- Lucide React for icons
+- Material Icons for consistent iconography (replaced Lucide)
+- React Icons library for additional icon support
 - Class Variance Authority for component variants
+- Custom CSS variables for glass effects and lemon color scheme
 
 ### Backend Dependencies
 - Express.js for server framework
 - Drizzle ORM for database operations
 - OpenAI SDK for AI integration
 - Zod for schema validation
+- Replit Auth dependencies: openid-client, passport, express-session, connect-pg-simple, memoizee
 
 ### Development Tools
 - ESBuild for server bundling
