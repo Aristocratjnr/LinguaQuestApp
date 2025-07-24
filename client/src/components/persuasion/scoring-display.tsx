@@ -1,5 +1,3 @@
-import { Progress } from "@/components/ui/progress";
-import { Card, CardContent } from "@/components/ui/card";
 import { TrendingUp, Languages, Heart, Star } from "lucide-react";
 
 interface ScoringDisplayProps {
@@ -22,85 +20,103 @@ export default function ScoringDisplay({
   if (!isVisible) return null;
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return "text-duo-green";
-    if (score >= 60) return "text-duo-yellow";
-    if (score >= 40) return "text-duo-orange";
-    return "text-duo-red";
-  };
-
-  const getProgressColor = (score: number) => {
-    if (score >= 80) return "bg-duo-green";
-    if (score >= 60) return "bg-duo-yellow";
-    if (score >= 40) return "bg-duo-orange";
-    return "bg-duo-red";
+    if (score >= 80) return "text-green-600";
+    if (score >= 60) return "text-yellow-600";
+    if (score >= 40) return "text-orange-600";
+    return "text-red-600";
   };
 
   return (
-    <Card className="mt-4 border-2 border-duo-blue/20">
-      <CardContent className="pt-6">
-        <div className="space-y-4">
-          <h4 className="font-bold text-gray-800 flex items-center">
-            <Star className="w-4 h-4 text-duo-yellow mr-2" />
+    <div className="duo-card p-6 mt-4 bg-gradient-to-br from-blue-50 to-green-50">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between mb-4">
+          <h4 className="text-xl font-black text-gray-800 flex items-center">
+            <Star className="w-5 h-5 text-yellow-500 mr-2" />
             Your Performance
           </h4>
-          
-          <div className="space-y-3">
+          <div className="flex items-center space-x-1 bg-yellow-100 px-3 py-1 rounded-full">
+            <Star className="w-4 h-4 text-yellow-600" />
+            <span className="font-bold text-yellow-700">+25 XP</span>
+          </div>
+        </div>
+        
+        <div className="space-y-4">
+          <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <TrendingUp className="w-4 h-4 text-duo-blue" />
-                <span className="text-sm font-medium">Persuasion Strength</span>
+                <TrendingUp className="w-5 h-5 text-blue-500" />
+                <span className="font-semibold text-gray-700">Persuasion Strength</span>
               </div>
-              <span className={`text-sm font-bold ${getScoreColor(persuasionStrength)}`}>
+              <span className={`font-black text-lg ${getScoreColor(persuasionStrength)}`}>
                 {persuasionStrength}%
               </span>
             </div>
-            <Progress value={persuasionStrength} className="h-2" />
-            
+            <div className="duo-progress-bar">
+              <div 
+                className="duo-progress-fill" 
+                style={{ width: `${persuasionStrength}%` }}
+              />
+            </div>
+          </div>
+          
+          <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Languages className="w-4 h-4 text-duo-green" />
-                <span className="text-sm font-medium">Translation Accuracy</span>
+                <Languages className="w-5 h-5 text-green-500" />
+                <span className="font-semibold text-gray-700">Translation Accuracy</span>
               </div>
-              <span className={`text-sm font-bold ${getScoreColor(translationAccuracy)}`}>
+              <span className={`font-black text-lg ${getScoreColor(translationAccuracy)}`}>
                 {translationAccuracy}%
               </span>
             </div>
-            <Progress value={translationAccuracy} className="h-2" />
-            
+            <div className="duo-progress-bar">
+              <div 
+                className="duo-progress-fill" 
+                style={{ width: `${translationAccuracy}%` }}
+              />
+            </div>
+          </div>
+          
+          <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Heart className="w-4 h-4 text-duo-purple" />
-                <span className="text-sm font-medium">Cultural Respect</span>
+                <Heart className="w-5 h-5 text-purple-500" />
+                <span className="font-semibold text-gray-700">Cultural Respect</span>
               </div>
-              <span className={`text-sm font-bold ${getScoreColor(culturalAppropriateness)}`}>
+              <span className={`font-black text-lg ${getScoreColor(culturalAppropriateness)}`}>
                 {culturalAppropriateness}%
               </span>
             </div>
-            <Progress value={culturalAppropriateness} className="h-2" />
+            <div className="duo-progress-bar">
+              <div 
+                className="duo-progress-fill" 
+                style={{ width: `${culturalAppropriateness}%` }}
+              />
+            </div>
           </div>
-
-          {persuasionChange !== 0 && (
-            <div className="pt-3 border-t">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">AI Stance Change:</span>
-                <span className={`text-sm font-bold ${
-                  persuasionChange > 0 ? "text-duo-green" : 
-                  persuasionChange < 0 ? "text-duo-red" : "text-duo-gray"
-                }`}>
-                  {persuasionChange > 0 ? "+" : ""}{persuasionChange}
-                </span>
-              </div>
-            </div>
-          )}
-
-          {feedback && (
-            <div className="pt-3 border-t">
-              <h5 className="text-sm font-medium text-gray-700 mb-1">AI Feedback:</h5>
-              <p className="text-sm text-gray-600 italic">"{feedback}"</p>
-            </div>
-          )}
         </div>
-      </CardContent>
-    </Card>
+
+        {persuasionChange !== 0 && (
+          <div className="pt-4 border-t border-gray-200">
+            <div className="flex items-center justify-between">
+              <span className="font-semibold text-gray-700">AI Stance Change:</span>
+              <span className={`font-black text-lg ${
+                persuasionChange > 0 ? "text-green-600" : 
+                persuasionChange < 0 ? "text-red-600" : "text-gray-600"
+              }`}>
+                {persuasionChange > 0 ? "+" : ""}{persuasionChange}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {feedback && (
+          <div className="pt-4 border-t border-gray-200">
+            <h5 className="font-bold text-gray-700 mb-2">AI Feedback:</h5>
+            <p className="text-sm text-gray-600 italic leading-relaxed">"{feedback}"</p>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

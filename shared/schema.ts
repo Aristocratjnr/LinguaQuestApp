@@ -85,6 +85,10 @@ export const insertCharacterSchema = createInsertSchema(characters).omit({
 
 export const insertConversationSchema = createInsertSchema(conversations).omit({
   id: true,
+  progress: true,
+  persuasionScore: true,
+  xpEarned: true,
+  isCompleted: true,
   createdAt: true,
 });
 

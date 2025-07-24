@@ -46,28 +46,31 @@ const tones = [
 
 export default function ToneSelector({ selectedTone, onToneChange, disabled }: ToneSelectorProps) {
   return (
-    <div className="mb-4">
-      <h4 className="text-sm font-medium text-gray-700 mb-2">Choose your tone:</h4>
-      <div className="grid grid-cols-2 gap-2">
+    <div className="mb-6">
+      <h4 className="text-lg font-black text-gray-800 mb-4 text-center">Choose your persuasion style:</h4>
+      <div className="grid grid-cols-2 gap-3">
         {tones.map((tone) => {
           const IconComponent = tone.icon;
           const isSelected = selectedTone === tone.id;
           
           return (
-            <Button
+            <button
               key={tone.id}
-              variant={isSelected ? "default" : "outline"}
-              size="sm"
-              className={`h-auto p-3 flex flex-col items-center space-y-1 ${
-                isSelected ? `${tone.color} text-white` : "hover:bg-gray-50"
+              className={`duo-card p-4 flex flex-col items-center space-y-2 transition-all duration-200 hover:scale-105 ${
+                isSelected ? "ring-4 ring-green-400 bg-green-50" : "hover:shadow-md"
               }`}
               onClick={() => onToneChange(tone.id)}
               disabled={disabled}
             >
-              <IconComponent className="w-4 h-4" />
-              <span className="text-xs font-medium">{tone.name}</span>
-              <span className="text-xs opacity-80">{tone.example}</span>
-            </Button>
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                isSelected ? "bg-green-500 text-white" : "bg-gray-100 text-gray-600"
+              }`}>
+                <IconComponent className="w-6 h-6" />
+              </div>
+              <span className="text-sm font-bold text-gray-800">{tone.name}</span>
+              <span className="text-xs text-gray-500 text-center leading-tight">{tone.description}</span>
+              <span className="text-xs font-medium text-blue-600 italic">"{tone.example}"</span>
+            </button>
           );
         })}
       </div>
