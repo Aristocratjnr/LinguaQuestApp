@@ -67,7 +67,7 @@ export default function Home() {
             </div>
           </div>
           
-          <h1 className="text-lg font-bold text-gray-800">LinguaChat</h1>
+          <h1 className="text-lg font-bold text-gray-800">PersuadeGH</h1>
           
           <div className="flex items-center space-x-3">
             <div className="flex items-center space-x-1">
@@ -105,7 +105,7 @@ export default function Home() {
           <CardHeader>
             <CardTitle className="text-lg flex items-center">
               <Users className="w-5 h-5 mr-2 text-duo-blue" />
-              Choose Your Challenge
+              Choose Your Persuasion Challenge
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -114,9 +114,9 @@ export default function Home() {
                 <SelectValue placeholder="Select difficulty" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="beginner">Beginner - Basic phrases</SelectItem>
-                <SelectItem value="intermediate">Intermediate - Conversations</SelectItem>
-                <SelectItem value="advanced">Advanced - Complex topics</SelectItem>
+                <SelectItem value="beginner">Beginner - Simple arguments</SelectItem>
+                <SelectItem value="intermediate">Intermediate - Persuasive debates</SelectItem>
+                <SelectItem value="advanced">Advanced - Complex persuasion</SelectItem>
               </SelectContent>
             </Select>
           </CardContent>
@@ -125,7 +125,7 @@ export default function Home() {
 
       {/* Characters */}
       <div className="max-w-md mx-auto px-4 pb-8">
-        <h3 className="text-lg font-bold text-gray-800 mb-4">Meet Your Conversation Partners</h3>
+        <h3 className="text-lg font-bold text-gray-800 mb-4">Choose Your Debate Opponent</h3>
         <div className="space-y-4">
           {characters.map((character: Character) => (
             <Card key={character.id} className="hover:shadow-lg transition-shadow">

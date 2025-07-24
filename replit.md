@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a language learning application similar to Duolingo, built with a modern full-stack architecture. The application allows users to practice conversations with AI characters in different languages, featuring real-time translation, cultural context, and gamification elements.
+This is a persuasive dialogue game where players interact with AI characters speaking Ghanaian languages (Twi, Ga, Ewe). Players must translate and craft persuasive arguments to convince AI characters to change their opinions, with scoring based on translation accuracy, persuasive strength, and cultural appropriateness. The game features a Duolingo-style UI with real-time translation and interactive AI behavior testing.
 
 ## User Preferences
 
@@ -36,36 +36,38 @@ Preferred communication style: Simple, everyday language.
 ### Database Schema
 The application uses a comprehensive schema with the following main entities:
 - **Users**: User profiles with XP, levels, streaks, and hearts (gamification)
-- **Characters**: AI conversation partners with personality, language, and cultural context
-- **Conversations**: Learning sessions with progress tracking and scenarios
-- **Messages**: Individual conversation exchanges with translations and cultural context
-- **Achievements**: Gamification rewards for user progress
+- **Characters**: AI debate opponents with personality, language, cultural context, persuasion resistance, and current stance
+- **Conversations**: Persuasion game sessions with topics, AI stances, and persuasion scoring
+- **Messages**: Individual persuasive exchanges with tone, translation accuracy, persuasive strength, and cultural appropriateness scores
+- **Achievements**: Gamification rewards for persuasive successes
 
 ### AI Integration
-- **OpenAI Integration**: GPT-4o model for generating character responses
-- **Character Personality**: AI maintains consistent character personas during conversations
-- **Cultural Context**: AI provides cultural insights and tips alongside language learning
-- **Dynamic Scenarios**: AI generates conversation scenarios based on character and difficulty
+- **OpenAI Integration**: GPT-4o model for generating character responses and evaluation
+- **Character Personality**: AI maintains consistent character personas with persuasion resistance levels
+- **Persuasion Evaluation**: AI scores translation accuracy, persuasive strength, and cultural appropriateness
+- **Dynamic Scenarios**: AI generates debate topics and controversial stances for persuasion challenges
 
 ### Translation Services
-- **Translation API**: Basic translation service (designed to be extended with Google Translate)
-- **Language Detection**: Automatic detection of user input language
-- **Cultural Context**: Explanations of cultural significance in translations
+- **Ghanaian Language Support**: Enhanced translation for Twi, Ga, and Ewe languages
+- **Language Detection**: Automatic detection with patterns for Ghanaian languages
+- **Cultural Context**: Explanations of cultural significance in translations and persuasion tactics
 
-### Conversation System
-- **Real-time Chat**: Message-based conversation interface
-- **Progress Tracking**: Exchange counting and XP calculation
-- **Difficulty Levels**: Beginner, intermediate, and advanced conversations
-- **Suggestions**: AI-powered response suggestions for learners
+### Persuasion Game System
+- **Real-time Debates**: Message-based persuasion interface with tone selection
+- **Progress Tracking**: Round counting, persuasion score tracking, and XP calculation
+- **Difficulty Levels**: Beginner, intermediate, and advanced persuasion challenges
+- **Scoring System**: Multi-dimensional evaluation of translation, persuasion, and cultural respect
+- **Tone Selection**: Players choose communication style (polite, passionate, formal, casual)
 
-## Data Flow
+## Game Flow
 
 1. **User Authentication**: Currently uses mock user data (ready for auth implementation)
-2. **Character Selection**: Users browse available AI characters and select conversation partners
-3. **Conversation Creation**: System generates scenarios and initializes conversation sessions
-4. **Message Exchange**: Real-time chat with AI characters, including translation and cultural tips
-5. **Progress Tracking**: XP calculation, achievement unlocking, and progress persistence
-6. **Gamification**: Streak tracking, heart system, and level progression
+2. **Character Selection**: Users browse available Ghanaian AI characters and select debate opponents
+3. **Scenario Generation**: System generates controversial topics and AI stances for persuasion challenges
+4. **Persuasion Rounds**: Players craft arguments in Ghanaian languages with tone selection
+5. **AI Evaluation**: Multi-dimensional scoring of translation accuracy, persuasive strength, and cultural appropriateness
+6. **Progress Tracking**: Persuasion score changes, XP calculation, achievement unlocking, and progress persistence
+7. **Gamification**: Streak tracking, heart system, and level progression based on persuasive success
 
 ## External Dependencies
 

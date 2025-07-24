@@ -10,6 +10,8 @@ import InputArea from "@/components/conversation/input-area";
 import TranslationTooltip from "@/components/conversation/translation-tooltip";
 import CulturalTip from "@/components/conversation/cultural-tip";
 import AchievementPopup from "@/components/conversation/achievement-popup";
+import ToneSelector from "@/components/persuasion/tone-selector";
+import ScoringDisplay from "@/components/persuasion/scoring-display";
 import type { Message, Achievement } from "@shared/schema";
 
 const MOCK_USER = {
@@ -40,6 +42,14 @@ export default function Conversation() {
   
   const [newAchievement, setNewAchievement] = useState<Achievement | null>(null);
   const [isTyping, setIsTyping] = useState(false);
+  const [selectedTone, setSelectedTone] = useState<string>("polite");
+  const [lastScoring, setLastScoring] = useState<{
+    persuasionStrength: number;
+    translationAccuracy: number; 
+    culturalAppropriateness: number;
+    persuasionChange: number;
+    feedback: string;
+  } | null>(null);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -54,15 +64,26 @@ export default function Conversation() {
       const response = await apiRequest("POST", `/api/conversations/${conversationId}/messages`, {
         sender: "user",
         content,
-        translation: "",
-        culturalContext: "",
-        xpAwarded: 0
+        tone: selectedTone,
+        originalLanguage: "en",
+        targetLanguage: character?.language || "twi"
       });
       return response.json();
     },
     onSuccess: (data) => {
       setIsTyping(false);
       queryClient.invalidateQueries({ queryKey: ["/api/conversations", conversationId] });
+      
+      // Display scoring if available
+      if (data.aiMessage) {
+        setLastScoring({
+          persuasionStrength: data.aiMessage.persuasionStrength || 0,
+          translationAccuracy: data.aiMessage.translationAccuracy || 0,
+          culturalAppropriateness: data.aiMessage.culturalAppropriateness || 0,
+          persuasionChange: data.aiMessage.persuasionChange || 0,
+          feedback: data.aiMessage.aiResponse || ""
+        });
+      }
       
       // Check if this unlocked any achievements
       if (data.conversation && data.conversation.progress === 1) {
@@ -71,8 +92,8 @@ export default function Conversation() {
             id: Date.now(),
             userId: MOCK_USER.id,
             type: "conversation_starter",
-            title: "Conversation Starter!",
-            description: `You successfully started your first conversation with ${(conversationData as any)?.character?.name}!`,
+            title: "Persuasion Master!",
+            description: `You started your first persuasion challenge with ${(conversationData as any)?.character?.name}!`,
             xpReward: 50,
             unlockedAt: new Date()
           });
@@ -134,6 +155,7 @@ export default function Conversation() {
 
   const handleSendMessage = (content: string) => {
     sendMessageMutation.mutate(content);
+    setLastScoring(null); // Clear previous scoring
   };
 
   const handleShowTranslation = (text: string, sourceLanguage?: string) => {
@@ -177,7 +199,7 @@ export default function Conversation() {
           />
         )}
 
-        <div className="p-4 space-y-4 max-h-96 overflow-y-auto pb-32" id="conversationArea">
+        <div className="p-4 space-y-4 max-h-96 overflow-y-auto pb-40" id="conversationArea">
           {messages.map((message: Message) => (
             <MessageBubble
               key={message.id}
@@ -208,16 +230,35 @@ export default function Conversation() {
 
           <div ref={messagesEndRef} />
         </div>
+
+        <ScoringDisplay
+          persuasionStrength={lastScoring?.persuasionStrength}
+          translationAccuracy={lastScoring?.translationAccuracy}
+          culturalAppropriateness={lastScoring?.culturalAppropriateness}
+          persuasionChange={lastScoring?.persuasionChange}
+          feedback={lastScoring?.feedback}
+          isVisible={!!lastScoring}
+        />
+      </div>
+
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg">
+        <div className="max-w-md mx-auto p-4">
+          <ToneSelector
+            selectedTone={selectedTone}
+            onToneChange={setSelectedTone}
+            disabled={sendMessageMutation.isPending}
+          />
+        </div>
       </div>
 
       <InputArea
         onSendMessage={handleSendMessage}
         isLoading={sendMessageMutation.isPending}
         suggestions={[
-          "Hola, ¿cómo está?",
-          "Me gustaría...",
-          "¿Cuánto cuesta?",
-          "Gracias"
+          "Me dwene sɛ...", // "I think that..." in Twi
+          "Medaase", // "Thank you" in Twi
+          "Ɛyɛ nokware", // "It is true" in Twi
+          "Minim" // "Listen" in Twi
         ]}
         targetLanguage={character?.language || "Spanish"}
       />

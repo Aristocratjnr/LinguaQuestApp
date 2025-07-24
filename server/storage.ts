@@ -69,36 +69,57 @@ export class MemStorage implements IStorage {
       password: "password123"
     });
 
-    // Initialize characters
+    // Initialize Ghanaian characters for persuasion game
     const defaultCharacters: InsertCharacter[] = [
       {
-        name: "Carlos",
-        role: "Restaurant Owner",
-        location: "Madrid, Spain",
-        language: "Spanish",
-        personality: "Friendly, passionate about food, patient with learners",
+        name: "Kwame",
+        role: "Traditional Elder",
+        location: "Kumasi, Ghana",
+        language: "Twi",
+        personality: "Wise, traditional, values cultural customs, somewhat skeptical of modern ideas",
         avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=80&h=80",
-        backgroundContext: "Carlos owns a traditional Spanish restaurant in Madrid. He loves sharing Spanish culture through food and is always eager to help people learn Spanish while they order.",
+        backgroundContext: "Kwame is a respected elder in Kumasi who deeply values Akan traditions. He often has strong opinions about modern vs traditional ways of life.",
         culturalTips: [
-          "Spaniards typically eat lunch between 2-4 PM and dinner after 9 PM",
-          "It's polite to greet the staff when entering a restaurant", 
-          "Paella is traditionally from Valencia and comes in many varieties"
+          "In Akan culture, respect for elders is paramount",
+          "Traditional greetings involve asking about one's health and family",
+          "Indirect communication is often preferred to maintain harmony"
         ] as string[],
+        persuasionResistance: 70,
+        currentStance: "Traditional ways are always better than modern approaches",
         isActive: true,
       },
       {
-        name: "Marie",
-        role: "Café Owner",
-        location: "Paris, France",
-        language: "French",
-        personality: "Sophisticated, artistic, enjoys discussing French culture",
+        name: "Ama",
+        role: "University Student",
+        location: "Accra, Ghana", 
+        language: "Ga",
+        personality: "Progressive, open-minded, environmentally conscious, eager to debate",
         avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=80&h=80",
-        backgroundContext: "Marie runs a charming café in Montmartre, Paris. She's passionate about French literature and loves introducing visitors to authentic French café culture.",
+        backgroundContext: "Ama studies environmental science at the University of Ghana. She's passionate about climate action but sometimes has controversial opinions.",
         culturalTips: [
-          "French people often say 'Bonjour' when entering shops",
-          "Coffee is typically served after meals, not with them",
-          "Tipping is not mandatory but small change is appreciated"
+          "Ga people value directness more than other Ghanaian cultures",
+          "Academic discussions are highly valued in university settings",
+          "Environmental consciousness is growing among young Ghanaians"
         ] as string[],
+        persuasionResistance: 40,
+        currentStance: "Technology will solve all environmental problems",
+        isActive: true,
+      },
+      {
+        name: "Togbe",
+        role: "Chief",
+        location: "Ho, Ghana",
+        language: "Ewe",
+        personality: "Diplomatic, thoughtful, believes in community consensus, moderate views",
+        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=80&h=80",
+        backgroundContext: "Togbe is a traditional chief in the Volta Region who balances modern governance with traditional leadership. He values thoughtful discussion.",
+        culturalTips: [
+          "Ewe culture emphasizes community decision-making",
+          "Chiefs are mediators who seek consensus",
+          "Patience and careful listening are highly valued"
+        ] as string[],
+        persuasionResistance: 55,
+        currentStance: "All important decisions should be made by community consensus",
         isActive: true,
       }
     ];
@@ -156,6 +177,8 @@ export class MemStorage implements IStorage {
       id,
       avatar: insertCharacter.avatar || null,
       culturalTips: Array.isArray(insertCharacter.culturalTips) ? insertCharacter.culturalTips : [],
+      persuasionResistance: insertCharacter.persuasionResistance || 50,
+      currentStance: insertCharacter.currentStance || null,
       isActive: insertCharacter.isActive ?? true
     };
     this.characters.set(id, character);
@@ -177,7 +200,8 @@ export class MemStorage implements IStorage {
       ...insertConversation, 
       id, 
       progress: 0,
-      totalExchanges: 20,
+      totalRounds: insertConversation.totalRounds || 5,
+      persuasionScore: 0,
       xpEarned: 0,
       isCompleted: false,
       createdAt: new Date() 
@@ -209,7 +233,13 @@ export class MemStorage implements IStorage {
       id, 
       timestamp: new Date(),
       translation: insertMessage.translation || null,
-      culturalContext: insertMessage.culturalContext || null,
+      originalLanguage: insertMessage.originalLanguage || null,
+      targetLanguage: insertMessage.targetLanguage || null,
+      tone: insertMessage.tone || null,
+      persuasionStrength: insertMessage.persuasionStrength || null,
+      translationAccuracy: insertMessage.translationAccuracy || null,
+      culturalAppropriateness: insertMessage.culturalAppropriateness || null,
+      aiResponse: insertMessage.aiResponse || null,
       xpAwarded: insertMessage.xpAwarded || 0
     };
     this.messages.set(id, message);

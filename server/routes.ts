@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { generateCharacterResponse, generateConversationScenario } from "./services/openai";
+import { generateCharacterResponse, generatePersuasionScenario } from "./services/openai";
 import { translateText, detectLanguage } from "./services/translate";
 import { 
   insertConversationSchema, 
@@ -48,8 +48,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Character not found" });
       }
 
-      // Generate scenario using AI
-      const scenario = await generateConversationScenario(
+      // Generate persuasion scenario using AI
+      const scenarioData = await generatePersuasionScenario(
         character.name,
         character.role,
         character.language,
@@ -58,7 +58,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const conversation = await storage.createConversation({
         ...validatedData,
-        scenario
+        scenario: scenarioData.scenario,
+        topic: scenarioData.topic,
+        aiStance: scenarioData.aiStance
       });
 
       res.json({ conversation });
@@ -113,30 +115,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create user message
       const userMessage = await storage.createMessage(messageData);
 
-      // Generate AI response
+      // Generate AI response for persuasion game
       const aiResponse = await generateCharacterResponse(
         character.name,
         character.personality,
-        conversation.scenario,
+        character.currentStance || conversation.aiStance,
+        character.persuasionResistance || 50,
         messageData.content,
-        character.language
+        messageData.tone || "neutral",
+        character.language,
+        conversation.topic
       );
 
-      // Create AI message
+      // Create AI message with persuasion evaluation
       const aiMessage = await storage.createMessage({
         conversationId,
         sender: "ai",
         content: aiResponse.message,
-        culturalContext: aiResponse.culturalContext,
+        originalLanguage: character.language,
+        targetLanguage: "en",
+        persuasionStrength: aiResponse.persuasionStrength,
+        translationAccuracy: aiResponse.translationAccuracy,
+        culturalAppropriateness: aiResponse.culturalAppropriateness,
+        aiResponse: aiResponse.feedback,
         xpAwarded: aiResponse.xpAwarded
       });
 
-      // Update conversation progress
+      // Update conversation progress and persuasion score
       const updatedProgress = (conversation.progress || 0) + 1;
-      const isCompleted = updatedProgress >= (conversation.totalExchanges || 20) || aiResponse.shouldEndConversation;
+      const isCompleted = updatedProgress >= (conversation.totalRounds || 5) || aiResponse.shouldEndConversation;
       
       await storage.updateConversation(conversationId, {
         progress: updatedProgress,
+        persuasionScore: (conversation.persuasionScore || 0) + aiResponse.persuasionChange,
         xpEarned: (conversation.xpEarned || 0) + aiResponse.xpAwarded,
         isCompleted
       });

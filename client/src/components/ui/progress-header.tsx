@@ -10,7 +10,7 @@ interface ProgressHeaderProps {
 }
 
 export default function ProgressHeader({ conversation, character, user }: ProgressHeaderProps) {
-  const progressPercentage = Math.round(((conversation.progress || 0) / (conversation.totalExchanges || 20)) * 100);
+  const progressPercentage = Math.round(((conversation.progress || 0) / (conversation.totalRounds || 5)) * 100);
 
   return (
     <div className="max-w-md mx-auto px-4 py-4 bg-white border-b">
@@ -40,7 +40,7 @@ export default function ProgressHeader({ conversation, character, user }: Progre
       </div>
       <div className="flex justify-between text-xs text-duo-gray">
         <span>Progress: {progressPercentage}%</span>
-        <span>{conversation.progress}/{conversation.totalExchanges} exchanges</span>
+        <span>{conversation.progress}/{conversation.totalRounds || 5} rounds</span>
       </div>
     </div>
   );

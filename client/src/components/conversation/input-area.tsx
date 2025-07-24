@@ -54,7 +54,7 @@ export default function InputArea({
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg">
+    <div className="fixed bottom-20 left-0 right-0 bg-white border-t shadow-lg">
       <div className="max-w-md mx-auto p-4">
         {/* Quick Suggestions */}
         <div className="flex space-x-2 mb-3 overflow-x-auto pb-2">

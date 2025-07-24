@@ -24,6 +24,8 @@ export const characters = pgTable("characters", {
   avatar: text("avatar"),
   backgroundContext: text("background_context").notNull(),
   culturalTips: jsonb("cultural_tips").$type<string[]>().default([]),
+  persuasionResistance: integer("persuasion_resistance").default(50), // 1-100 how hard to convince
+  currentStance: text("current_stance"), // their current opinion on topics
   isActive: boolean("is_active").default(true),
 });
 
@@ -33,9 +35,12 @@ export const conversations = pgTable("conversations", {
   characterId: integer("character_id").references(() => characters.id).notNull(),
   title: text("title").notNull(),
   scenario: text("scenario").notNull(),
+  topic: text("topic").notNull(), // the topic being debated
+  aiStance: text("ai_stance").notNull(), // AI's initial position
   difficulty: text("difficulty").notNull(), // beginner, intermediate, advanced
   progress: integer("progress").default(0),
-  totalExchanges: integer("total_exchanges").default(20),
+  totalRounds: integer("total_rounds").default(5),
+  persuasionScore: integer("persuasion_score").default(0), // how much AI was convinced
   xpEarned: integer("xp_earned").default(0),
   isCompleted: boolean("is_completed").default(false),
   createdAt: timestamp("created_at").defaultNow(),
@@ -47,7 +52,13 @@ export const messages = pgTable("messages", {
   sender: text("sender").notNull(), // 'user' or 'ai'
   content: text("content").notNull(),
   translation: text("translation"),
-  culturalContext: text("cultural_context"),
+  originalLanguage: text("original_language"), // language user wrote in
+  targetLanguage: text("target_language"), // language it was translated to
+  tone: text("tone"), // polite, passionate, formal, etc.
+  persuasionStrength: integer("persuasion_strength"), // 1-100 how convincing
+  translationAccuracy: integer("translation_accuracy"), // 1-100 how accurate
+  culturalAppropriateness: integer("cultural_appropriateness"), // 1-100
+  aiResponse: text("ai_response"), // AI's evaluation/feedback
   xpAwarded: integer("xp_awarded").default(0),
   timestamp: timestamp("timestamp").defaultNow(),
 });

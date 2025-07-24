@@ -54,15 +54,15 @@ export default function MessageBubble({
               Translate
             </Button>
             
-            {message.culturalContext && (
+            {message.aiResponse && (
               <Button
                 variant="ghost"
                 size="sm"
                 className="text-duo-purple text-xs font-medium hover:underline p-0 h-auto"
-                onClick={() => onShowCulturalTip(message.culturalContext!)}
+                onClick={() => onShowCulturalTip(message.aiResponse!)}
               >
                 <Lightbulb className="w-3 h-3 mr-1" />
-                Culture Tip
+                AI Feedback
               </Button>
             )}
             

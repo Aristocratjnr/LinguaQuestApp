@@ -8,6 +8,11 @@ const openai = new OpenAI({
 export interface AICharacterResponse {
   message: string;
   culturalContext?: string;
+  persuasionStrength: number; // 1-100 how convincing the user's argument was
+  translationAccuracy: number; // 1-100 how accurate the translation was
+  culturalAppropriateness: number; // 1-100 how culturally appropriate
+  persuasionChange: number; // -50 to +50 how much AI's stance changed
+  feedback: string; // AI's evaluation of the argument
   xpAwarded: number;
   shouldEndConversation?: boolean;
 }
@@ -15,24 +20,33 @@ export interface AICharacterResponse {
 export async function generateCharacterResponse(
   characterName: string,
   characterPersonality: string,
-  conversationContext: string,
+  currentStance: string,
+  persuasionResistance: number,
   userMessage: string,
-  language: string
+  userTone: string,
+  language: string,
+  topic: string
 ): Promise<AICharacterResponse> {
   try {
-    const prompt = `You are ${characterName}, a ${characterPersonality}. You are having a conversation in ${language} with a language learner.
+    const prompt = `You are ${characterName}, a ${characterPersonality} from Ghana. 
 
-Context: ${conversationContext}
+Your current stance on "${topic}": ${currentStance}
+Your persuasion resistance: ${persuasionResistance}/100 (higher = harder to convince)
 
-The user just said: "${userMessage}"
+The user is trying to persuade you about "${topic}" using this argument in ${language}: "${userMessage}"
+Their communication tone was: ${userTone}
 
-Please respond as ${characterName} would, staying in character. Respond with a JSON object containing:
-- message: Your response in ${language}
-- culturalContext: Optional cultural tip or context (in English) that would help the learner understand the cultural significance
-- xpAwarded: Points to award (5-15 based on response quality and cultural relevance)
-- shouldEndConversation: Boolean if this response naturally concludes the conversation
+Evaluate their persuasive attempt and respond with a JSON object containing:
+- message: Your response in ${language} (stay in character, react to their argument)
+- persuasionStrength: 1-100 (how convincing was their argument?)
+- translationAccuracy: 1-100 (how accurate was their ${language}?)
+- culturalAppropriateness: 1-100 (did they use appropriate tone/respect for your culture?)
+- persuasionChange: -50 to +50 (how much did your stance shift? Consider your resistance level)
+- feedback: Brief evaluation in English of their argument's strengths/weaknesses
+- xpAwarded: 10-50 points based on overall performance
+- shouldEndConversation: true if fully convinced or discussion has run its course
 
-Keep responses conversational, encouraging, and authentic to your character. Include cultural nuances when appropriate.`;
+Be realistic about persuasion - don't change your mind easily given your resistance level.`;
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
@@ -55,7 +69,12 @@ Keep responses conversational, encouraging, and authentic to your character. Inc
     return {
       message: result.message || "I'm sorry, I didn't understand that.",
       culturalContext: result.culturalContext,
-      xpAwarded: Math.max(5, Math.min(15, result.xpAwarded || 10)),
+      persuasionStrength: Math.max(1, Math.min(100, result.persuasionStrength || 50)),
+      translationAccuracy: Math.max(1, Math.min(100, result.translationAccuracy || 50)),
+      culturalAppropriateness: Math.max(1, Math.min(100, result.culturalAppropriateness || 50)),
+      persuasionChange: Math.max(-50, Math.min(50, result.persuasionChange || 0)),
+      feedback: result.feedback || "Good attempt at persuasion.",
+      xpAwarded: Math.max(10, Math.min(50, result.xpAwarded || 20)),
       shouldEndConversation: result.shouldEndConversation || false
     };
   } catch (error) {
@@ -64,20 +83,28 @@ Keep responses conversational, encouraging, and authentic to your character. Inc
   }
 }
 
-export async function generateConversationScenario(
+export async function generatePersuasionScenario(
   characterName: string,
   characterRole: string,
   language: string,
   difficulty: string
-): Promise<string> {
+): Promise<{ topic: string; scenario: string; aiStance: string }> {
   try {
-    const prompt = `Create a conversation scenario for ${characterName}, a ${characterRole}, speaking ${language}.
+    const prompt = `Create a persuasion game scenario for ${characterName}, a ${characterRole} from Ghana who speaks ${language}.
     
 Difficulty level: ${difficulty}
 
-Generate a realistic scenario that would naturally lead to a conversation. Keep it contextual and engaging for language learners.
+Generate a controversial topic and scenario where the player must persuade ${characterName} to change their mind. The topic should be:
+- Culturally relevant to Ghana
+- Appropriate for the difficulty level  
+- Something ${characterName} would have a strong opinion about
 
-Respond with just the scenario description in English.`;
+Respond with a JSON object containing:
+- topic: The debate topic (e.g., "Traditional vs Modern Medicine")
+- scenario: Brief description of the situation in English
+- aiStance: ${characterName}'s initial strong opinion on the topic
+
+Make it engaging and realistic for a persuasion challenge.`;
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
@@ -87,12 +114,22 @@ Respond with just the scenario description in English.`;
           content: prompt
         }
       ],
+      response_format: { type: "json_object" },
       temperature: 0.7,
     });
 
-    return response.choices[0].message.content || "A general conversation practice scenario.";
+    const result = JSON.parse(response.choices[0].message.content || "{}");
+    return {
+      topic: result.topic || "General Discussion",
+      scenario: result.scenario || "A debate about different perspectives.",
+      aiStance: result.aiStance || "I have strong opinions on this matter."
+    };
   } catch (error) {
     console.error("OpenAI scenario generation error:", error);
-    return "Practice a conversation to improve your language skills.";
+    return {
+      topic: "General Discussion",
+      scenario: "Practice persuading someone to change their mind.",
+      aiStance: "I have my own opinions on various topics."
+    };
   }
 }

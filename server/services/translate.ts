@@ -13,44 +13,69 @@ export async function translateText(
   sourceLanguage?: string
 ): Promise<TranslationResult> {
   try {
-    // In a real implementation, you would use Google Translate API:
-    // const translate = new Translate({ key: process.env.GOOGLE_TRANSLATE_API_KEY });
-    // const [translation] = await translate.translate(text, targetLanguage);
+    // Enhanced translation support for Ghanaian languages
+    // In production, you would integrate with Google Translate or specialized services
     
-    // For now, we'll provide some basic translations for common phrases
-    const basicTranslations: Record<string, Record<string, string>> = {
-      'es': {
-        'Hola': 'Hello',
-        '¡Hola!': 'Hello!',
-        'Bienvenido': 'Welcome',
-        'restaurante': 'restaurant',
-        'paella': 'paella (traditional Spanish rice dish)',
-        'gracias': 'thank you',
-        'por favor': 'please',
-        'me gustaría': 'I would like',
-        'cuánto cuesta': 'how much does it cost',
-        'la cuenta': 'the bill',
-        'excelente': 'excellent',
-        'valenciana': 'Valencian style',
-        'mariscos': 'seafood'
+    const ghanaianTranslations: Record<string, Record<string, string>> = {
+      'twi': {
+        'Akwaaba': 'Welcome',
+        'Me paakyɛw': 'Please',
+        'Medaase': 'Thank you',
+        'Dabi': 'No',
+        'Aane': 'Yes',
+        'Wobɛyɛ sɛn?': 'How are you?',
+        'Me ho ye': 'I am fine',
+        'Me kɔ didi': 'I want to eat',
+        'Me dwene sɛ': 'I think that',
+        'Mennyɛ': 'I disagree',
+        'Me gye di': 'I believe',
+        'Ɛyɛ nokware': 'It is true',
+        'Ɛnyɛ nokware': 'It is not true',
+        'Minim': 'Listen',
+        'Tie': 'Understand'
       },
-      'fr': {
-        'Bonjour': 'Hello',
-        'café': 'coffee',
-        'merci': 'thank you',
-        's\'il vous plaît': 'please',
-        'je voudrais': 'I would like',
-        'l\'addition': 'the bill',
-        'excellent': 'excellent'
+      'ga': {
+        'Akwaaba': 'Welcome',
+        'Ejɛ': 'Please',
+        'Oyiwladɛɛ': 'Thank you',
+        'Aai': 'No', 
+        'Ehn': 'Yes',
+        'Bawo ni?': 'How are you?',
+        'Mi yɛ': 'I am fine',
+        'Mi ko didi': 'I want to eat',
+        'Mi sumo ni': 'I think that',
+        'Mi kɛ kyɛ': 'I disagree',
+        'Mi gyɛ': 'I believe',
+        'Enɛ nokore': 'It is true',
+        'Enɛ menye nokore': 'It is not true',
+        'Tɛ': 'Listen',
+        'Se': 'Understand'
+      },
+      'ewe': {
+        'Woezɔ': 'Welcome',
+        'Meɖe kuku': 'Please',
+        'Akpe na wò': 'Thank you',
+        'Ao': 'No',
+        'Ɛ̃': 'Yes',
+        'Ale ka?': 'How are you?',
+        'Enyo': 'I am fine',
+        'Me di be maɖu nu': 'I want to eat',
+        'Mebu be': 'I think that',
+        'Nyemelɔ̃ o': 'I disagree',
+        'Mexɔe se': 'I believe',
+        'Enye nyateƒe': 'It is true',
+        'Menye nyateƒe o': 'It is not true',
+        'Se': 'Listen',
+        'Gɔme': 'Understand'
       }
     };
 
     let translatedText = text;
     
-    if (sourceLanguage && basicTranslations[sourceLanguage]) {
-      const translations = basicTranslations[sourceLanguage];
+    if (sourceLanguage && ghanaianTranslations[sourceLanguage.toLowerCase()]) {
+      const translations = ghanaianTranslations[sourceLanguage.toLowerCase()];
       
-      // Simple word-by-word translation for basic phrases
+      // Simple phrase translation for Ghanaian languages
       Object.keys(translations).forEach(phrase => {
         const regex = new RegExp(phrase, 'gi');
         translatedText = translatedText.replace(regex, translations[phrase]);
@@ -78,12 +103,14 @@ export async function translateText(
 }
 
 export async function detectLanguage(text: string): Promise<string> {
-  // Simple language detection based on common patterns
-  const spanishPatterns = /[ñáéíóúü]|¡|¿/;
-  const frenchPatterns = /[àâäéèêëïîôöùûüÿç]/;
+  // Enhanced language detection for Ghanaian languages
+  const twiPatterns = /[ɛɔɑ]|ɛyɛ|medaase|akwaaba|dwene|gyɛ/i;
+  const gaPatterns = /[ɛɔ]|ejɛ|oyiwladɛɛ|bawo|sumo|gyɛ/i;
+  const ewePatterns = /[ɛɔ̃]|woezɔ|akpe|ale ka|mebu|mexɔe/i;
   
-  if (spanishPatterns.test(text)) return 'es';
-  if (frenchPatterns.test(text)) return 'fr';
+  if (twiPatterns.test(text)) return 'twi';
+  if (gaPatterns.test(text)) return 'ga';
+  if (ewePatterns.test(text)) return 'ewe';
   
   return 'en'; // Default to English
 }
